@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Administrativo - Activos</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Panel de Control, Métricas y Trazabilidad</h1>
+        <a href="index.html">Volver al inicio</a>
+    </header>
+
+    <div class="container">
+        <h2>Indicadores en Tiempo Real</h2>
+        <div class="dashboard-metrics">
+            <div class="card-metric">
+                <h3>Total Inventario</h3>
+                <p id="totalActivos">0</p>
+            </div>
+            <div class="card-metric" style="border-left-color: #e74c3c;">
+                <h3>Activos Prestados</h3>
+                <p id="activosPrestados">0</p>
+            </div>
+            <div class="card-metric" style="border-left-color: #2ecc71;">
+                <h3>Activos Disponibles</h3>
+                <p id="activosDisponibles">0</p>
+            </div>
+        </div>
+
+        <h2>Registrar Nuevo Activo Tecnológico</h2>
+        <form id="formActivo">
+            <input type="text" id="nombreActivo" placeholder="Nombre (ej. Placa Arduino)" required>
+            <input type="text" id="tipoActivo" placeholder="Tipo (ej. Sensor o Kit)" required>
+            <input type="text" id="descripcionActivo" placeholder="Descripción breve">
+            <button type="submit">Guardar Activo</button>
+        </form>
+
+        <h2>Inventario de Dispositivos</h2>
+        <div style="margin-top: 15px;">
+        <a href="http://localhost:8000/api/exportar_csv.php" target="_blank">
+        <button style="background-color: #27ae60;">Exportar Inventario a CSV</button>
+        </a>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Tipo</th>
+                    <th>Estado</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody id="tablaActivos">
+                </tbody>
+        </table>
+
+        <br><br>
+        
+        <h2>Bitácora de Eventos (Trazabilidad)</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID Evento</th>
+                    <th>Usuario ID</th>
+                    <th>Acción Realizada</th>
+                    <th>Detalles</th>
+                    <th>Fecha y Hora</th>
+                </tr>
+            </thead>
+            <tbody id="tablaBitacora">
+                </tbody>
+        </table>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
