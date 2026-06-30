@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro - Sistema de Activos</title>
+
+    <link rel="stylesheet" href="styles.css">
+
+    <style>
+
+    body{
+        background: linear-gradient(135deg, #0f172a, #1e293b);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 30px;
+    }
+
+    .register-box{
+        width:100%;
+        max-width:500px;
+        background: rgba(255,255,255,0.98);
+        backdrop-filter: blur(15px);
+        padding:45px;
+        border-radius:28px;
+        box-shadow:
+            0 25px 50px rgba(0,0,0,.25),
+            0 10px 25px rgba(0,0,0,.12);
+        border:1px solid rgba(255,255,255,.3);
+        position:relative;
+        overflow:hidden;
+    }
+
+    .register-box::before{
+        content:'';
+        position:absolute;
+        top:-120px;
+        right:-120px;
+        width:250px;
+        height:250px;
+        border-radius:50%;
+        background:rgba(59,130,246,.12);
+    }
+
+    .register-box::after{
+        content:'';
+        position:absolute;
+        bottom:-100px;
+        left:-100px;
+        width:220px;
+        height:220px;
+        border-radius:50%;
+        background:rgba(16,185,129,.10);
+    }
+
+    .register-box h2{
+        text-align:center;
+        color:#0f172a;
+        margin-bottom:35px;
+        border:none;
+        padding:0;
+        font-size:32px;
+        font-weight:800;
+        position:relative;
+        z-index:2;
+    }
+
+    .register-box h2::after{
+        content:'';
+        display:block;
+        width:70px;
+        height:4px;
+        margin:12px auto 0;
+        border-radius:20px;
+        background:linear-gradient(90deg,#3b82f6,#10b981);
+    }
+
+    .register-box form{
+        display:flex;
+        flex-direction:column;
+        gap:18px;
+        position:relative;
+        z-index:2;
+    }
+
+    .register-box input,
+    .register-box select{
+        width:100%;
+        padding:16px 18px;
+        border:2px solid #e2e8f0;
+        border-radius:14px;
+        font-size:15px;
+        background:#f8fafc;
+        transition:all .3s ease;
+    }
+
+    .register-box input:focus,
+    .register-box select:focus{
+        border-color:#3b82f6;
+        background:white;
+        outline:none;
+        box-shadow:0 0 0 5px rgba(59,130,246,.15);
+        transform:translateY(-2px);
+    }
+
+    .register-box input:hover,
+    .register-box select:hover{
+        border-color:#94a3b8;
+    }
+
+    .register-box button{
+        width:100%;
+        padding:16px;
+        border:none;
+        border-radius:14px;
+        font-size:16px;
+        font-weight:700;
+        color:white;
+        cursor:pointer;
+        background:linear-gradient(135deg,#10b981,#059669);
+        box-shadow:0 12px 25px rgba(16,185,129,.35);
+        transition:all .3s ease;
+    }
+
+    .register-box button:hover{
+        transform:translateY(-3px);
+        box-shadow:0 18px 35px rgba(16,185,129,.45);
+    }
+
+    .register-box button:active{
+        transform:translateY(0);
+    }
+
+    .login-link{
+        display:block;
+        text-align:center;
+        margin-top:25px;
+        color:#2563eb;
+        text-decoration:none;
+        font-weight:700;
+        font-size:15px;
+        transition:.3s;
+    }
+
+    .login-link:hover{
+        color:#1d4ed8;
+    }
+
+    .back-link{
+        display:block;
+        text-align:center;
+        margin-top:15px;
+        color:#64748b;
+        text-decoration:none;
+        font-size:14px;
+        transition:.3s;
+    }
+
+    .back-link:hover{
+        color:#334155;
+    }
+
+    @media (max-width: 768px){
+
+        body{
+            padding:20px;
+        }
+
+        .register-box{
+            padding:30px;
+            border-radius:22px;
+        }
+
+        .register-box h2{
+            font-size:26px;
+        }
+
+    }
+
+</style>
+
+</head>
+<body>
+
+    <div class="register-box">
+
+        <h2>✨ Crear Cuenta</h2>
+        <p style="text-align:center;color:#64748b;margin-bottom:25px;"> Registra una nueva cuenta para acceder al Sistema de Gestión de Activos Tecnológicos. </p>
+
+        <form id="formRegistro">
+
+            <input
+                type="text"
+                id="regNombre"
+                placeholder="Nombre completo"
+                required
+            >
+
+            <input
+                type="text"
+                id="regUsuario"
+                placeholder="Nombre de usuario"
+                required
+            >
+
+            <input
+                type="password"
+                id="regPassword"
+                placeholder="Contraseña"
+                required
+            >
+
+            <select id="regRol" required>
+                <option value="" disabled selected>
+                    Selecciona tu rol
+                </option>
+
+                <option value="administrador">
+                    Administrador
+                </option>
+
+                <option value="usuario">
+                    Estudiante / Usuario
+                </option>
+            </select>
+
+            <button type="submit">
+                Registrarse
+            </button>
+
+        </form>
+
+        <a href="login.html" class="login-link">
+            ¿Ya tienes cuenta? Inicia sesión
+        </a>
+
+        <a href="index.html" class="back-link">
+            Volver al inicio
+        </a>
+
+    </div>
+
+    <script>
+
+        document.getElementById('formRegistro')
+        .addEventListener('submit', async function(e){
+
+            e.preventDefault();
+
+            const nombre =
+                document.getElementById('regNombre')
+                .value
+                .trim();
+
+            const usuario =
+                document.getElementById('regUsuario')
+                .value
+                .trim();
+
+            const password =
+                document.getElementById('regPassword')
+                .value;
+
+            const rol =
+                document.getElementById('regRol')
+                .value;
+
+            const nuevoUsuario = {
+                nombre,
+                usuario,
+                password,
+                rol
+            };
+
+            try{
+
+                const response =
+                    await fetch('/api/registro.php', {
+
+                        method:'POST',
+
+                        headers:{
+                            'Content-Type':'application/json'
+                        },
+
+                        body:JSON.stringify(nuevoUsuario)
+
+                    });
+
+                const result = await response.json();
+
+                if(
+                    response.ok &&
+                    result.status === 'success'
+                ){
+
+                    alert(
+                        result.message ||
+                        'Usuario registrado correctamente.'
+                    );
+
+                    window.location.href =
+                        'login.html';
+
+                }else{
+
+                    alert(
+                        'Error: ' +
+                        (result.message || 'No se pudo registrar.')
+                    );
+
+                }
+
+            }catch(error){
+
+                console.error(error);
+
+                alert(
+                    'No se pudo conectar con el servidor.'
+                );
+
+            }
+
+        });
+
+    </script>
+
+</body>
+</html>

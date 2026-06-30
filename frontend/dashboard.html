@@ -3,78 +3,810 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel Administrativo - Activos</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Panel de Control - Sistema de Activos</title>
+    <style>
+
+:root{
+    --primary:#0f172a;
+    --secondary:#1e293b;
+    --accent:#4f46e5;
+    --accent-hover:#4338ca;
+    --success:#10b981;
+    --warning:#f59e0b;
+    --danger:#ef4444;
+    --background:#f1f5f9;
+    --card:#ffffff;
+    --border:#e2e8f0;
+    --text:#0f172a;
+    --text-light:#64748b;
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Segoe UI',sans-serif;
+}
+
+body{
+    background:var(--background);
+    color:var(--text);
+    padding:30px;
+}
+
+/* CONTENEDOR */
+
+.container{
+    max-width:1400px;
+    margin:auto;
+    background:white;
+    padding:30px;
+    border-radius:24px;
+    box-shadow:
+        0 15px 50px rgba(15,23,42,.08);
+}
+
+/* BARRA SUPERIOR */
+
+#infoSesion{
+    background:linear-gradient(
+        135deg,
+        #0f172a,
+        #1e293b,
+        #312e81
+    ) !important;
+
+    color:white;
+    padding:20px 25px !important;
+    border-radius:20px !important;
+
+    margin-bottom:25px !important;
+
+    box-shadow:
+        0 15px 35px rgba(15,23,42,.15);
+}
+
+#infoSesion a{
+    color:#fca5a5 !important;
+    font-weight:700;
+    text-decoration:none;
+}
+
+#infoSesion a:hover{
+    color:white !important;
+}
+
+/* TITULOS */
+
+h2{
+    font-size:32px;
+    margin-bottom:25px;
+    color:#0f172a;
+    border:none;
+}
+
+h3{
+    margin-top:30px;
+    margin-bottom:20px;
+    color:#1e293b;
+    font-size:22px;
+}
+
+/* FORMULARIOS */
+
+.form-grid{
+    display:grid;
+    grid-template-columns:
+    repeat(auto-fit,minmax(220px,1fr));
+
+    gap:15px;
+
+    background:white;
+    padding:25px;
+
+    border-radius:20px;
+
+    border:1px solid var(--border);
+
+    box-shadow:
+    0 8px 25px rgba(15,23,42,.04);
+
+    margin-bottom:30px;
+}
+
+.form-grid input,
+.form-grid select{
+
+    width:100%;
+
+    padding:14px;
+
+    border:1px solid #dbe2ea;
+
+    border-radius:14px;
+
+    font-size:14px;
+
+    transition:.3s;
+}
+
+.form-grid input:focus,
+.form-grid select:focus{
+
+    outline:none;
+
+    border-color:#4f46e5;
+
+    box-shadow:
+    0 0 0 5px rgba(79,70,229,.15);
+}
+
+/* BOTONES */
+
+button{
+    border:none;
+    cursor:pointer;
+    transition:.25s;
+    font-weight:700;
+}
+
+.btn-save{
+
+    background:linear-gradient(
+        135deg,
+        #4f46e5,
+        #2563eb
+    );
+
+    color:white;
+
+    border-radius:14px;
+
+    padding:14px 20px;
+
+    box-shadow:
+    0 10px 25px rgba(79,70,229,.25);
+}
+
+.btn-save:hover{
+
+    transform:translateY(-3px);
+
+    box-shadow:
+    0 15px 35px rgba(79,70,229,.35);
+}
+
+.btn-export{
+
+    background:linear-gradient(
+        135deg,
+        #10b981,
+        #059669
+    );
+
+    color:white;
+
+    border-radius:14px;
+
+    padding:14px 20px;
+
+    margin-bottom:20px;
+
+    box-shadow:
+    0 10px 25px rgba(16,185,129,.25);
+}
+
+.btn-export:hover{
+    transform:translateY(-3px);
+}
+
+/* TABLAS */
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    overflow:hidden;
+    border-radius:18px;
+    background:white;
+    box-shadow:
+    0 10px 25px rgba(15,23,42,.05);
+}
+
+th{
+
+    background:#0f172a;
+
+    color:white;
+
+    padding:18px;
+
+    text-align:left;
+
+    font-size:13px;
+
+    letter-spacing:.6px;
+}
+
+td{
+    padding:18px;
+    border-bottom:1px solid #e2e8f0;
+}
+
+tr{
+    transition:.25s;
+}
+
+tr:hover{
+    background:#f8fafc;
+}
+
+/* BADGES */
+
+.badge{
+    padding:8px 15px;
+    border-radius:999px;
+    font-size:12px;
+    font-weight:700;
+}
+
+.badge-disponible{
+    background:#dcfce7;
+    color:#166534;
+}
+
+.badge-prestado{
+    background:#ffedd5;
+    color:#9a3412;
+}
+
+.badge-mantenimiento{
+    background:#fef3c7;
+    color:#92400e;
+}
+
+.badge-baja{
+    background:#e5e7eb;
+    color:#374151;
+}
+
+.badge-vencido{
+    background:#fee2e2;
+    color:#991b1b;
+}
+
+/* BOTONES DE ACCIONES */
+
+.action-btn{
+
+    color:white;
+
+    border:none;
+
+    border-radius:12px;
+
+    padding:10px 14px;
+
+    margin-right:5px;
+
+    font-size:12px;
+
+    font-weight:700;
+
+    transition:.25s;
+
+    box-shadow:
+    0 5px 15px rgba(0,0,0,.10);
+}
+
+.action-btn:hover{
+    transform:translateY(-2px);
+}
+
+/* FILA VENCIDA */
+
+.row-vencido{
+    background:#fff1f2;
+}
+
+/* MODAL */
+
+#modalPrestar{
+    backdrop-filter:blur(6px);
+}
+
+#modalPrestar > div{
+
+    background:white !important;
+
+    border-radius:24px !important;
+
+    padding:30px !important;
+
+    border:1px solid #e2e8f0;
+
+    box-shadow:
+    0 25px 60px rgba(15,23,42,.25);
+}
+
+#modalPrestar h3{
+    color:#0f172a !important;
+}
+
+#modalPrestar input,
+#modalPrestar select{
+
+    width:100%;
+
+    padding:14px !important;
+
+    border-radius:12px !important;
+
+    border:1px solid #dbe2ea !important;
+}
+
+#modalPrestar input:focus,
+#modalPrestar select:focus{
+
+    outline:none;
+
+    border-color:#4f46e5 !important;
+
+    box-shadow:
+    0 0 0 4px rgba(79,70,229,.15);
+}
+
+/* RESPONSIVE */
+
+@media(max-width:768px){
+
+    body{
+        padding:15px;
+    }
+
+    .container{
+        padding:20px;
+    }
+
+    h2{
+        font-size:24px;
+    }
+
+}
+
+</style>
 </head>
 <body>
-    <header>
-        <h1>Panel de Control, Métricas y Trazabilidad</h1>
-        <a href="index.html">Volver al inicio</a>
-    </header>
-
     <div class="container">
-        <h2>Indicadores en Tiempo Real</h2>
-        <div class="dashboard-metrics">
-            <div class="card-metric">
-                <h3>Total Inventario</h3>
-                <p id="totalActivos">0</p>
+        <div id="infoSesion" style="background: #eef1f6; padding: 10px 15px; border-radius: 4px; margin-bottom: 15px; font-weight: bold; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                Usuario: <span id="sesionNombre" style="color: #2980b9;">Cargando...</span> | 
+                Rol: <span id="sesionRol" style="color: #e67e22;">...</span>
             </div>
-            <div class="card-metric" style="border-left-color: #e74c3c;">
-                <h3>Activos Prestados</h3>
-                <p id="activosPrestados">0</p>
-            </div>
-            <div class="card-metric" style="border-left-color: #2ecc71;">
-                <h3>Activos Disponibles</h3>
-                <p id="activosDisponibles">0</p>
+            <div>
+                <a href="index.html" style="text-decoration:none; color:#c0392b;">Cerrar Sesión</a>
             </div>
         </div>
+        <h2>Panel de Control, Métricas y Trazabilidad</h2>
+         
+        <h3>Registrar Nuevo Activo Tecnológico</h3>
+        <form id="formActivo" class="form-grid">
+            <input type="text" id="actNombre" placeholder="Nombre (ej. ESP32)" required>
+            <input type="text" id="actTipo" placeholder="Tipo (ej. Sensor)" required>
+            <input type="text" id="actDescripcion" placeholder="Descripción breve" required>
+            <input type="text" id="actUbicacion" placeholder="Ubicación (ej. Lab 1)" required>
+            
+            <select id="actEstadoInicial" required>
+                <option value="" disabled selected>Estado inicial</option>
+                <option value="disponible">Disponible</option>
+                <option value="mantenimiento">En Mantenimiento</option>
+            </select>
 
-        <h2>Registrar Nuevo Activo Tecnológico</h2>
-        <form id="formActivo">
-            <input type="text" id="nombreActivo" placeholder="Nombre (ej. Placa Arduino)" required>
-            <input type="text" id="tipoActivo" placeholder="Tipo (ej. Sensor o Kit)" required>
-            <input type="text" id="descripcionActivo" placeholder="Descripción breve">
-            <button type="submit">Guardar Activo</button>
+            <button type="submit" class="btn-save">Guardar Activo</button>
         </form>
 
-        <h2>Inventario de Dispositivos</h2>
-        <div style="margin-top: 15px;">
-        <a href="http://localhost:8000/api/exportar_csv.php" target="_blank">
-        <button style="background-color: #27ae60;">Exportar Inventario a CSV</button>
-        </a>
-        </div>
+        <h3>Inventario de Dispositivos</h3>
+        <button onclick="exportarCSV()" class="btn-export">Exportar Inventario a CSV</button>
         <table>
             <thead>
                 <tr>
                     <th>ID</th>
                     <th>Nombre</th>
                     <th>Tipo</th>
+                    <th>Ubicación</th>
                     <th>Estado</th>
                     <th>Acción</th>
                 </tr>
             </thead>
-            <tbody id="tablaActivos">
-                </tbody>
+            <tbody id="tablaInventario">
+            </tbody>
         </table>
 
-        <br><br>
-        
-        <h2>Bitácora de Eventos (Trazabilidad)</h2>
+        <h3>Bitácora de Eventos (Trazabilidad)</h3>
         <table>
             <thead>
                 <tr>
                     <th>ID Evento</th>
-                    <th>Usuario ID</th>
+                    <th>Usuario</th>
                     <th>Acción Realizada</th>
                     <th>Detalles</th>
                     <th>Fecha y Hora</th>
                 </tr>
             </thead>
             <tbody id="tablaBitacora">
-                </tbody>
+            </tbody>
         </table>
     </div>
 
-    <script src="app.js"></script>
+    <div id="modalPrestar" style="display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; overflow:auto; background-color:rgba(0,0,0,0.5);">
+        <div style="background-color:#fefefe; margin:5% auto; padding:25px; border-radius:8px; width:450px; box-shadow:0 4px 15px rgba(0,0,0,0.2);">
+            <span onclick="cerrarModal()" style="color:#aaa; float:right; font-size:28px; font-weight:bold; cursor:pointer;">&times;</span>
+            <h3 style="margin-top:0; color:#2980b9;">Registrar Préstamo de Activo</h3>
+            
+            <form id="formPrestamo" onsubmit="confirmarPrestamo(event)">
+                <input type="hidden" id="prestamoActivoId">
+                
+                <div style="margin-bottom: 15px;">
+                    <label style="font-weight:bold; display:block; margin-bottom:5px;">Seleccionar Estudiante / Usuario:</label>
+                    <select id="prestamoUsuarioId" required style="width:100%; padding:10px; border:1px solid #ccc; border-radius:4px;">
+                        <option value="" disabled selected>Cargando usuarios...</option>
+                    </select>
+                </div>
+                
+                <div style="margin-bottom: 15px;">
+                    <label style="font-weight:bold; display:block; margin-bottom:5px;">Fecha y Hora de Inicio:</label>
+                    <input type="datetime-local" id="prestamoFechaInicio" required style="width:100%; padding:10px; border:1px solid #ccc; border-radius:4px;">
+                </div>
+
+                <div style="margin-bottom: 15px;">
+                    <label style="font-weight:bold; display:block; margin-bottom:5px;">Fecha y Hora Límite de Devolución:</label>
+                    <input type="datetime-local" id="prestamoFechaLimite" required style="width:100%; padding:10px; border:1px solid #ccc; border-radius:4px;">
+                </div>
+
+                <div style="margin-bottom: 15px;">
+                    <label style="font-weight:bold; display:block; margin-bottom:5px;">Descripción / Motivo del Préstamo:</label>
+                    <input type="text" id="prestamoDescripcion" placeholder="Escribe detalles del préstamo (opcional)" style="width:100%; padding:10px; border:1px solid #ccc; border-radius:4px;">
+                </div>
+
+                <div style="text-align:right; margin-top:20px;">
+                    <button type="button" onclick="cerrarModal()" style="background-color:#95a5a6; color:white; padding:10px 15px; margin-right:8px; border-radius:4px; cursor:pointer;">Cancelar</button>
+                    <button type="submit" style="background-color:#2980b9; color:white; padding:10px 15px; border-radius:4px; cursor:pointer;">Confirmar Préstamo</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // --- CARGAR DATOS AL ABRIR LA PÁGINA ---
+        document.addEventListener("DOMContentLoaded", function() {
+            let nombreUsuario = localStorage.getItem('usuarioLogeado');
+            let rolUsuario = localStorage.getItem('rolUsuario');
+
+            if (!nombreUsuario || nombreUsuario === "undefined" || nombreUsuario === "null") {
+                nombreUsuario = "Invitado";
+            }
+            if (!rolUsuario || rolUsuario === "undefined" || rolUsuario === "null") {
+                rolUsuario = "Estudiante";
+            }
+
+            document.getElementById('sesionNombre').innerText = nombreUsuario;
+            document.getElementById('sesionRol').innerText = rolUsuario.toUpperCase();
+
+            cargarInventario();
+            cargarBitacora();
+        });
+
+        // --- REGISTRO DE NUEVO ACTIVO (ALTA) ---
+        document.getElementById('formActivo').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const nuevo = {
+                nombre: document.getElementById('actNombre').value.trim(),
+                tipo: document.getElementById('actTipo').value.trim(),
+                descripcion: document.getElementById('actDescripcion').value.trim(),
+                ubicacion: document.getElementById('actUbicacion').value.trim(),
+                estado: document.getElementById('actEstadoInicial').value
+            };
+
+            try {
+                const res = await fetch('/api/registro_activo.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json'},
+                    body: JSON.stringify(nuevo)
+                });
+                if(res.ok) {
+                    alert("Activo registrado exitosamente.");
+                    location.reload();
+                } else {
+                    alert("Error al registrar activo.");
+                }
+            } catch (err) {
+                console.error("Error de conexión:", err);
+            }
+        });
+
+        // --- OBTENER Y DIBUJAR INVENTARIO ---
+        async function cargarInventario() {
+            try {
+                const response = await fetch('/api/activos.php');
+                const activos = await response.json();
+                
+                const tbody = document.getElementById('tablaInventario');
+                tbody.innerHTML = '';
+                
+                const fechaActual = new Date();
+
+                activos.forEach(act => {
+                    let badge = '';
+                    let acciones = '';
+                    let filaClase = '';
+
+                    const nombreMostrar = act.nombre_activo || act.nombre || 'Sin nombre';
+
+                    if(act.estado === 'disponible') {
+                        badge = `<span class="badge badge-disponible">Disponible</span>`;
+                        acciones = `
+                            <button onclick="prestarActivo(${act.id})" class="action-btn" style="background-color: #2980b9;">Prestar</button>
+                            <button onclick="enviarMantenimiento(${act.id})" class="action-btn" style="background-color: #f39c12;">Mantenimiento</button>
+                            <button onclick="darDeBaja(${act.id})" class="action-btn" style="background-color: #c0392b;">Dar de baja</button>
+                        `;
+                    } else if (act.estado === 'prestado') {
+                        // Verificamos si la fecha límite pasó para mostrar alerta en inventario también
+                        if (act.fecha_limite && new Date(act.fecha_limite) < fechaActual) {
+                            badge = `<span class="badge badge-vencido" title="Vencido el ${new Date(act.fecha_limite).toLocaleString()}">¡PRÉSTAMO VENCIDO!</span>`;
+                            filaClase = 'row-vencido';
+                        } else {
+                            badge = `<span class="badge badge-prestado">Prestado</span>`;
+                        }
+                        
+                        acciones = `
+                           <span style="color:#7f8c8d; font-size:12px; margin-right:5px;">En uso</span>
+                           <button onclick="devolverActivo(${act.id})" class="action-btn" style="background-color: #e67e22;" title="Liberar activo">Devolver</button>
+                        `;
+                    } else if (act.estado === 'mantenimiento') {
+                        badge = `<span class="badge badge-mantenimiento">En Mantenimiento</span>`;
+                        acciones = `
+                            <button onclick="marcarDisponible(${act.id})" class="action-btn" style="background-color: #27ae60;">Hacer Disponible</button>
+                            <button onclick="darDeBaja(${act.id})" class="action-btn" style="background-color: #c0392b;">Dar de baja</button>
+                        `;
+                    } else if (act.estado === 'dado_de_baja') {
+                        badge = `<span class="badge badge-baja">Dado de baja</span>`;
+                        acciones = `<span style="color:#95a5a6; font-size:12px;">Inactivo (Baja)</span>`;
+                    }
+
+                    tbody.innerHTML += `
+                        <tr class="${filaClase}">
+                            <td>${act.id}</td>
+                            <td>${nombreMostrar}</td>
+                            <td>${act.tipo}</td>
+                            <td>${act.ubicacion || 'N/D'}</td>
+                            <td>${badge}</td>
+                            <td>${acciones}</td>
+                        </tr>
+                    `;
+                });
+            } catch (err) {
+                console.error("Error al cargar inventario:", err);
+            }
+        }
+
+        // --- CONTROLADORES DE ACTUALIZACIÓN DE ESTADOS ---
+        async function enviarMantenimiento(id) {
+            if(confirm("¿Enviar este activo a mantenimiento?")) {
+                await actualizarEstado(id, 'mantenimiento');
+            }
+        }
+
+        async function marcarDisponible(id) {
+            await actualizarEstado(id, 'disponible');
+        }
+
+        async function darDeBaja(id) {
+            if(confirm("ADVERTENCIA: Esta acción dará de baja permanente el activo del inventario. ¿Continuar?")) {
+                await actualizarEstado(id, 'dado_de_baja');
+            }
+        }
+
+        async function actualizarEstado(id, nuevoEstado) {
+            try {
+                const res = await fetch('/api/actualizar_estado.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: id, estado: nuevoEstado })
+                });
+                if(res.ok) {
+                    alert("Estado actualizado correctamente.");
+                    location.reload();
+                } else {
+                    alert("Ocurrió un problema al actualizar.");
+                }
+            } catch(err) {
+                console.error("Error de conexión:", err);
+            }
+        }
+
+        // --- ABRIR MODAL DE PRÉSTAMO Y CARGAR USUARIOS ---
+        async function prestarActivo(idActivo) {
+            document.getElementById('prestamoActivoId').value = idActivo;
+            document.getElementById('modalPrestar').style.display = "block";
+
+            const now = new Date();
+            // Ajuste de zona horaria local
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset()); 
+            const fechaHoraActual = now.toISOString().slice(0, 16);
+            
+            // 1. Fecha y Hora de Inicio: Toma el momento exacto y se bloquea (o solo lectura) para que sea la real
+            const inputInicio = document.getElementById('prestamoFechaInicio');
+            inputInicio.value = fechaHoraActual;
+            inputInicio.readOnly = true; // Opcional: para que el usuario no la pueda modificar por error
+            
+            // 2. Fecha y Hora Límite: Se inicializa en el momento actual para que el usuario elija una posterior
+            const inputLimite = document.getElementById('prestamoFechaLimite');
+            inputLimite.value = fechaHoraActual;
+            inputLimite.min = fechaHoraActual; // Evita que pongan una fecha límite en el pasado
+
+            try {
+                const response = await fetch('/api/usuarios.php'); 
+                const usuarios = await response.json();
+                
+                const selectUsuario = document.getElementById('prestamoUsuarioId');
+                selectUsuario.innerHTML = '<option value="" disabled selected>-- Seleccione un usuario --</option>';
+                
+                usuarios.forEach(u => {
+                    selectUsuario.innerHTML += `<option value="${u.id}">${u.nombre} (${u.usuario})</option>`;
+                });
+            } catch (err) {
+                console.error("Error al cargar lista de usuarios:", err);
+                alert("No se pudieron cargar los usuarios para el préstamo.");
+            }
+        }
+
+        function cerrarModal() {
+            document.getElementById('modalPrestar').style.display = "none";
+        }
+
+        // --- ENVIAR DATOS DE PRÉSTAMO A PRESTAMOS.PHP ---
+        async function confirmarPrestamo(e) {
+            e.preventDefault();
+            
+            const activoId = document.getElementById('prestamoActivoId').value;
+            const usuarioId = document.getElementById('prestamoUsuarioId').value;
+            
+            const fechaInicio = document.getElementById('prestamoFechaInicio').value;
+            const fechaLimite = document.getElementById('prestamoFechaLimite').value;
+            
+            if (new Date(fechaLimite) <= new Date(fechaInicio)) {
+                alert("La fecha y hora límite debe ser posterior a la fecha y hora de inicio.");
+                return;
+            }
+
+            const descripcion = document.getElementById('prestamoDescripcion').value.trim();
+
+            const datosPrestamo = {
+                usuario_id: parseInt(usuarioId),
+                activo_id: parseInt(activoId),
+                fecha_inicio: fechaInicio + ":00",
+                fecha_limite: fechaLimite + ":00",
+                descripcion: descripcion
+            };
+
+            try {
+                const res = await fetch('/api/prestamos.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(datosPrestamo)
+                });
+                
+                const respuesta = await res.json();
+
+                if(res.ok && respuesta.status === 'success') {
+                    alert("¡Préstamo registrado exitosamente!");
+                    location.reload(); 
+                } else {
+                    alert("Error: " + (respuesta.message || "No se pudo procesar el préstamo."));
+                }
+            } catch (err) {
+                console.error("Error en la red:", err);
+                alert("Ocurrió un error al conectar con el servidor.");
+            }
+        }
+
+       // --- CARGAR BITÁCORA DE AUDITORÍA ---
+        async function cargarBitacora() {
+            try {
+                const response = await fetch('/api/auditoria.php');
+                const eventos = await response.json();
+                const tbody = document.getElementById('tablaBitacora');
+                tbody.innerHTML = '';
+
+                const fechaActual = new Date();
+
+                eventos.forEach(ev => {
+                    let advertenciaVencido = '';
+                    
+                    // Alerta si el evento es un préstamo y ya rebasó la fecha límite
+                    if (ev.accion && ev.accion.toLowerCase().includes('préstamo') && ev.fecha_limite && new Date(ev.fecha_limite) < fechaActual) {
+                        advertenciaVencido = `<br><span style="color: #c0392b; font-weight: bold;">⚠️ ¡Plazo de devolución vencido!</span>`;
+                    }
+
+                    // AQUÍ INTEGRAMOS LA VISUALIZACIÓN DE AMBAS FECHAS
+                    // Lógica para mostrar las fechas de inicio y límite de manera condicional
+                    let detallesFechas = '';
+
+                     // Solo mostrará las fechas si realmente tienen un valor válido y no son nulas
+                     if (ev.fecha_inicio && ev.fecha_limite && ev.fecha_inicio !== '0000-00-00 00:00:00') {
+                       detallesFechas = `<br><small>📅 <b>Inicio:</b> ${ev.fecha_inicio} | ⏳ <b>Límite:</b> ${ev.fecha_limite}</small>`;
+                         }
+
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${ev.id}</td>
+                            <td>${ev.usuario_nombre}</td>
+                            <td style="color: #9c27b0; font-weight: bold;">${ev.accion}</td>
+                            <td>${ev.detalles} ${detallesFechas} ${advertenciaVencido}</td>
+                            <td>${ev.fecha_evento}</td>
+                        </tr>
+                    `;
+                });
+            } catch (err) {
+                console.error("Error al cargar bitácora:", err);
+            }
+        }
+        // --- EXPORTAR INVENTARIO A CSV ---
+        async function exportarCSV() {
+            try {
+                const response = await fetch('/api/activos.php');
+                const activos = await response.json();
+                
+                let csvContent = "data:text/csv;charset=utf-8,";
+                csvContent += "ID,Nombre,Tipo,Ubicación,Estado\r\n";
+                
+                activos.forEach(act => {
+                    const nombreA = act.nombre_activo || act.nombre || 'S/N';
+                    let row = `${act.id},${nombreA},${act.tipo},${act.ubicacion || 'N/D'},${act.estado}\r\n`;
+                    csvContent += row;
+                });
+
+                var encodedUri = encodeURI(csvContent);
+                var link = document.createElement("a");
+                link.setAttribute("href", encodedUri);
+                link.setAttribute("download", "inventario_activos.csv");
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } catch (err) {
+                alert("No se pudo exportar el inventario en este momento.");
+                console.error(err);
+            }
+        }
+
+        // --- PROCESAR LA DEVOLUCIÓN DE UN ACTIVO ---
+        async function devolverActivo(idActivo) {
+            if (confirm("¿Confirmar la devolución y liberación de este activo?")) {
+                try {
+                    const datosDevolucion = {
+                        prestamo_id: idActivo,
+                        activo_id: idActivo
+                    };
+
+                    const res = await fetch('/api/prestamos.php', {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(datosDevolucion)
+                    });
+                    
+                    const respuesta = await res.json();
+
+                    if (res.ok && respuesta.status === 'success') {
+                        alert("¡Activo devuelto y liberado correctamente!");
+                        location.reload();
+                    } else {
+                        alert("Error: " + (respuesta.message || "No se pudo procesar la devolución."));
+                    }
+                } catch (err) {
+                    console.error("Error al conectar con el servidor:", err);
+                    alert("Ocurrió un error al procesar la devolución.");
+                }
+            }
+        }
+    </script>
 </body>
 </html>

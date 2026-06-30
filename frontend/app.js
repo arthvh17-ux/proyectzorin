@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:8000';
+const API_URL = '/api';
 
 document.addEventListener('DOMContentLoaded', () => {
     cargarActivos();
@@ -17,17 +17,18 @@ document.addEventListener('DOMContentLoaded', () => {
 async function cargarActivos() {
     try {
         const response = await fetch(`${API_URL}/activos.php`);
+        if (!response.ok) throw new Error('Error en la respuesta del servidor');
+        
         const activos = await response.json();
         
         const tbody = document.getElementById('tablaActivos');
         tbody.innerHTML = '';
 
-        if(activos.message) {
+        if (activos.message) {
             tbody.innerHTML = `<tr><td colspan="5">${activos.message}</td></tr>`;
             return;
         }
 
-        // Variables para indicadores estadísticos (Métricas)
         let total = activos.length;
         let prestados = 0;
         let disponibles = 0;
@@ -51,15 +52,14 @@ async function cargarActivos() {
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td>${activo.id}</td>
-                <td>${activo.nombre_activo}</td>
-                <td>${activo.tipo}</td>
+                <td>${escapeHtml(activo.nombre_activo)}</td>
+                <td>${escapeHtml(activo.tipo)}</td>
                 <td>${badgeEstado}</td>
                 <td>${botonAccion}</td>
             `;
             tbody.appendChild(tr);
         });
 
-        // Actualizar métricas en el dashboard
         document.getElementById('totalActivos').innerText = total;
         document.getElementById('activosPrestados').innerText = prestados;
         document.getElementById('activosDisponibles').innerText = disponibles;
@@ -75,18 +75,16 @@ function validarYRegistrarActivo() {
     const tipo = document.getElementById('tipoActivo').value.trim();
     const descripcion = document.getElementById('descripcionActivo').value.trim();
 
-    // Validación rigurosa de longitud y caracteres
     if (nombre.length < 3 || tipo.length < 3) {
         alert("¡Validación frontal! El nombre y el tipo deben tener al menos 3 caracteres.");
         return;
     }
 
-    // Si pasa validación, ejecuta el registro
     ejecutarRegistroActivo(nombre, tipo, descripcion);
 }
 
 // Envío asíncrono a API
-async function executarRegistroActivo(nombre, tipo, descripcion) {
+async function ejecutarRegistroActivo(nombre, tipo, descripcion) {
     const nuevoActivo = {
         nombre_activo: nombre,
         tipo: tipo,
@@ -102,27 +100,30 @@ async function executarRegistroActivo(nombre, tipo, descripcion) {
         });
         const result = await response.json();
         
-        if(result.status === 'success') {
+        if (result.status === 'success') {
             alert(result.message);
             document.getElementById('formActivo').reset();
-            cargarActivos();
-            cargarBitacora();
+            await cargarActivos();
+            await cargarBitacora();
         } else {
             alert("Error del servidor: " + result.message);
         }
     } catch (error) {
         console.error("Error de conexión al registrar:", error);
+        alert("No se pudo conectar con el servidor. Revisa la consola o Docker.");
     }
 }
 
-// 3. Petición asíncrona para Préstamo
+// 3. Petición asíncrona para Préstamo (Toma ID dinámico del login)
 async function prestarActivo(activoId) {
+    const usuarioLogueadoId = localStorage.getItem('usuarioId') || 1;
+
     const fechaLimite = new Date();
-    fechaLimite.setDate(fechaLimite.getDate() + 7); // Préstamo automático por 7 días
+    fechaLimite.setDate(fechaLimite.getDate() + 7);
     const fechaLimiteStr = fechaLimite.toISOString().slice(0, 19).replace('T', ' ');
 
     const payload = {
-        usuario_id: 1, 
+        usuario_id: usuarioLogueadoId, 
         activo_id: activoId,
         fecha_limite: fechaLimiteStr
     };
@@ -135,8 +136,8 @@ async function prestarActivo(activoId) {
         });
         const result = await response.json();
         alert(result.message);
-        cargarActivos();
-        cargarBitacora();
+        await cargarActivos();
+        await cargarBitacora();
     } catch (error) {
         console.error("Error al prestar:", error);
     }
@@ -157,8 +158,8 @@ async function devolverActivo(activoId) {
         });
         const result = await response.json();
         alert(result.message);
-        cargarActivos();
-        cargarBitacora();
+        await cargarActivos();
+        await cargarBitacora();
     } catch (error) {
         console.error("Error al devolver:", error);
     }
@@ -177,9 +178,9 @@ async function cargarBitacora() {
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td>${evento.id}</td>
-                <td>${evento.usuario_accion_id} (${evento.usuario_nombre})</td>
-                <td style="font-weight:bold; color:#c0392b;">${evento.accion}</td>
-                <td>${evento.descripcion}</td>
+                <td>${evento.usuario_accion_id} (${escapeHtml(evento.usuario_nombre)})</td>
+                <td style="font-weight:bold; color:#c0392b;">${escapeHtml(evento.accion)}</td>
+                <td>${escapeHtml(evento.descripcion)}</td>
                 <td>${evento.fecha_evento}</td>
             `;
             tbody.appendChild(tr);
@@ -187,4 +188,19 @@ async function cargarBitacora() {
     } catch (error) {
         console.error("Error cargando bitácora:", error);
     }
+}
+
+// Función de seguridad para evitar inyección HTML en tablas
+function escapeHtml(string) {
+    const entityMap = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;',
+        '/': '&#x2F;'
+    };
+    return String(string).replace(/[&<>"'\/]/g, function (s) {
+        return entityMap[s];
+    });
 }

@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Control Premium</title>
+    <link rel="stylesheet" href="styles.css"> 
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>🛍️ Activos Disponibles para Préstamo</h1>
+        <p>Selecciona un artículo disponible y solicita tu préstamo de inmediato.</p>
+        
+        <div class="user-info" style="display: flex; justify-content: flex-end; align-items: center; gap: 15px; margin-top: 15px;">
+            <span>👤 <strong id="navNombre">Usuario</strong> (<span id="navRol">Usuario</span>)</span>
+            <button class="btn-logout" onclick="cerrarSesion()">Cerrar Sesión</button>
+        </div>
+    </header>
+
+    <div class="form-group" style="width: 300px; margin-bottom: 20px;">
+        <label style="font-weight: bold;">Solicitante:</label>
+        <span id="usuarioLogueadoTexto" style="font-size: 16px; color: var(--primary);"></span>
+        <input type="hidden" id="usuarioLogueadoId">
+    </div>
+
+    <table id="tablaActivosDisponibles">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Artículo / Activo</th>
+                <th>Descripción</th>
+                <th>Ubicación</th>
+                <th>Estado</th>
+                <th>Acción</th>
+            </tr>
+        </thead>
+        <tbody>
+            </tbody>
+    </table>
+</div>
+
+<div id="modalPrestarUsuario" style="
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,.6);
+z-index:9999;
+">
+
+    <div style="
+    background:white;
+    width:700px;
+    max-width:95%;
+    margin:5% auto;
+    padding:30px;
+    border-radius:15px;
+    position:relative;
+    box-sizing:border-box;
+    ">
+
+        <span onclick="cerrarModal()" style="
+        position:absolute;
+        top:15px;
+        right:20px;
+        font-size:30px;
+        cursor:pointer;
+        ">&times;</span>
+
+        <h2 style="margin-bottom:25px;">Solicitar Préstamo</h2>
+
+        <form id="formPrestarUsuario" onsubmit="confirmarPrestamo(event)">
+
+            <input type="hidden" id="prestamoActivoId">
+            <input type="hidden" id="prestamoUbicacion">
+
+            <div style="
+            display:flex;
+            gap:20px;
+            flex-wrap:wrap;
+            margin-bottom:20px;
+            ">
+
+                <div style="flex:1; min-width:250px;">
+                    <label style="display:block;margin-bottom:8px;font-weight:bold;">
+                        Fecha y Hora de Inicio
+                    </label>
+
+                    <input
+                        type="datetime-local"
+                        id="prestamoFechaInicio"
+                        readonly
+                        style="
+                        width:100%;
+                        padding:12px;
+                        border:1px solid #ccc;
+                        border-radius:8px;
+                        box-sizing:border-box;
+                        background:#f0f0f0;
+                        "
+                    >
+                </div>
+
+                <div style="flex:1; min-width:250px;">
+                    <label style="display:block;margin-bottom:8px;font-weight:bold;">
+                        Fecha y Hora Límite de Devolución
+                    </label>
+
+                    <input
+                        type="datetime-local"
+                        id="prestamoFechaLimite"
+                        required
+                        style="
+                        width:100%;
+                        padding:12px;
+                        border:1px solid #ccc;
+                        border-radius:8px;
+                        box-sizing:border-box;
+                        "
+                    >
+                </div>
+
+            </div>
+
+            <div style="margin-bottom:20px;">
+
+                <label style="display:block;margin-bottom:8px;font-weight:bold;">
+                    Motivo u observaciones (Opcional)
+                </label>
+
+                <textarea
+                    id="prestamoDescripcion"
+                    rows="4"
+                    placeholder="Escribe un detalle breve..."
+                    style="
+                    width:100%;
+                    padding:12px;
+                    border:1px solid #ccc;
+                    border-radius:8px;
+                    box-sizing:border-box;
+                    resize:vertical;
+                    "
+                ></textarea>
+
+            </div>
+
+            <button
+                type="submit"
+                style="
+                width:100%;
+                padding:15px;
+                background:#2563eb;
+                color:white;
+                border:none;
+                border-radius:10px;
+                font-size:16px;
+                font-weight:bold;
+                cursor:pointer;
+                "
+            >
+                Solicitar Préstamo
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        recuperarSesion();
+        
+        const usuarioId = localStorage.getItem('usuarioId');
+        const usuarioNombre = localStorage.getItem('usuarioLogeado'); 
+        
+        document.getElementById('usuarioLogueadoId').value = usuarioId;
+        document.getElementById('usuarioLogueadoTexto').textContent = usuarioNombre;
+
+        cargarActivosDisponibles();
+    });
+
+    function recuperarSesion() {
+        const nombre = localStorage.getItem('usuarioLogeado');
+        const rol = localStorage.getItem('rolUsuario') || localStorage.getItem('usuario_rol');
+
+        if (!nombre || !rol) {
+            alert("No has iniciado sesión o tu sesión ha expirado.");
+            window.location.href = 'login.html';
+            return;
+        }
+
+        document.getElementById('navNombre').textContent = nombre;
+        document.getElementById('navRol').textContent = rol.toUpperCase();
+    }
+
+    function cerrarSesion() {
+        localStorage.clear();
+        window.location.href = 'login.html';
+    }
+
+    async function cargarActivosDisponibles() {
+        try {
+            const response = await fetch('/api/activos.php'); 
+            const activos = await response.json();
+            
+            const tbody = document.querySelector('#tablaActivosDisponibles tbody');
+            tbody.innerHTML = '';
+
+            const disponibles = activos.filter(a => a.estado.toLowerCase() === 'disponible');
+
+            if(disponibles.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;">No hay artículos disponibles en este momento.</td></tr>`;
+                return;
+            }
+
+            disponibles.forEach(act => {
+                const ubicacionSegura = act.ubicacion || 'N/D';
+                // Respaldo por si viene como nombre o nombre_activo
+                const nombreArticulo = act.nombre_activo || act.nombre || 'Sin nombre'; 
+
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${act.id}</td>
+                        <td>${nombreArticulo}</td>
+                        <td>${act.descripcion || ''}</td>
+                        <td>${ubicacionSegura}</td>
+                        <td><span style="color: green; font-weight: bold;">${act.estado}</span></td>
+                        <td><button class="btn-prestar" onclick="abrirModalPrestar(${act.id}, '${ubicacionSegura}')">Pedir Préstamo</button></td>
+                    </tr>
+                `;
+            });
+        } catch (err) {
+            console.error("Error al cargar activos:", err);
+        }
+    }
+
+    function abrirModalPrestar(idActivo, ubicacion) {
+        const usuarioId = document.getElementById('usuarioLogueadoId').value;
+        if(!usuarioId) {
+            alert("Sesión no identificada. Por favor, vuelve a iniciar sesión.");
+            window.location.href = 'login.html';
+            return;
+        }
+
+        document.getElementById('prestamoActivoId').value = idActivo;
+        document.getElementById('prestamoUbicacion').value = ubicacion; 
+        document.getElementById('modalPrestarUsuario').style.display = "block";
+
+        const now = new Date();
+        now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+        const fechaHoraActual = now.toISOString().slice(0, 16);
+
+        const inputInicio = document.getElementById('prestamoFechaInicio');
+        inputInicio.value = fechaHoraActual;
+
+        const inputLimite = document.getElementById('prestamoFechaLimite');
+        inputLimite.value = fechaHoraActual;
+        inputLimite.min = fechaHoraActual;
+    }
+
+    function cerrarModal() {
+        document.getElementById('modalPrestarUsuario').style.display = "none";
+    }
+
+    async function confirmarPrestamo(e) {
+        e.preventDefault();
+
+        const usuarioId = document.getElementById('usuarioLogueadoId').value;
+        const activoId = document.getElementById('prestamoActivoId').value;
+        const ubicacion = document.getElementById('prestamoUbicacion').value; 
+        const fechaInicio = document.getElementById('prestamoFechaInicio').value;
+        const fechaLimite = document.getElementById('prestamoFechaLimite').value;
+        const descripcion = document.getElementById('prestamoDescripcion').value;
+
+        const payload = {
+            usuario_id: usuarioId,
+            activo_id: activoId,
+            ubicacion: ubicacion, 
+            fecha_inicio: fechaInicio,
+            fecha_limite: fechaLimite,
+            descripcion: descripcion
+        };
+
+        try {
+            // Ruta corregida a la raíz donde nginx procesa los endpoints PHP
+            const response = await fetch('/api/prestamos.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            const resultado = await response.json();
+
+            if (resultado.status === 'success') {
+                alert("🎉 ¡Préstamo autorizado de forma automática y exitosa! Puedes pasar a recoger tu artículo.");
+                cerrarModal();
+                cargarActivosDisponibles();
+            } else {
+                alert("Error: " + resultado.message);
+            }
+        } catch (err) {
+            console.error("Error de red:", err);
+            alert("Ocurrió un error al procesar la solicitud.");
+        }
+    }
+
+    window.onclick = function(event) {
+        const modal = document.getElementById('modalPrestarUsuario');
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+</script>
+
+</body>
+</html>

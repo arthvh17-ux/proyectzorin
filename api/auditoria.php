@@ -8,11 +8,14 @@ require_once 'conexion.php';
 $method = $_SERVER['REQUEST_METHOD'];
 
 if ($method == 'GET') {
-    // Obtiene todo el historial de trazabilidad ordenado por el evento más reciente
-    $stmt = $pdo->query("SELECT b.*, u.nombre as usuario_nombre 
+    // Se agregan b.fecha_inicio y b.fecha_limite para que la API las devuelva en el JSON
+    $stmt = $pdo->query("SELECT b.id, b.usuario_accion_id, b.accion, b.detalles, 
+                                b.fecha_evento, b.fecha_inicio, b.fecha_limite, 
+                                u.nombre as usuario_nombre 
                          FROM bitacora_trazabilidad b 
                          JOIN usuarios u ON b.usuario_accion_id = u.id 
-                         ORDER BY b.fecha_evento DESC");
+                         ORDER BY b.id DESC");
+    
     $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
     echo json_encode($data);
